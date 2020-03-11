@@ -13,7 +13,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
-import Link from '@material-ui/core/Link';
 import InputBase from '@material-ui/core/InputBase';
 
 import MenuIcon from '@material-ui/icons/Menu';
@@ -23,31 +22,10 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 
 import { mainListItems, secondaryListItems } from './listItems';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-// import TableauV1 from './Tableaux/TableauV1-classe';
-// import TableauV1b from './Tableaux/TableauV1-fonction';
-// import TableauV1c from './Tableaux/TableauV1-fonction2';
-// import TableauV1d from './Tableaux/TableauV1-fonction3';
-// import TableauV2 from './Tableaux/TableauV2-ajoutBouton';
-// import TableauV1 from './Tableaux/TableauV3-Suppression'
-// import TableauV1 from './Tableaux/TableauV3-Suppression2'
-import TableauV4 from './Tableaux/TableauV4'
-
-import TableauFractionne from './Tableaufractionne'
-
-// Pied de page du DashBoard
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import Characters from './Characters';
+import CharacterDescription from './CharacterDescription';
 
 const drawerWidth = 240;
 
@@ -263,27 +241,30 @@ export default function Dashboard() {
         {/* <List>{secondaryListItems}</List> */}
       </Drawer>
 
+      <Router>
 
-      <main className={classes.content}>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-
-          <Grid container spacing={3}>
-            
-            <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <TableauV4 />
-              </Paper>
-            </Grid>
-
-          </Grid>
-
-          <Box pt={4}>
-            <Copyright />
-          </Box>
+        <Switch>
           
-        </Container>
-      </main>
+          <Route exact path="/character/:id">
+            <CharacterDescription />
+          </Route>
+          <Route path="/character">
+            <CharacterDescription />
+          </Route>
+          <Route path="/gears">
+            <Characters />
+          </Route>
+          <Route path="/summons">
+            <Characters />
+          </Route>
+          <Route path="/">
+            <Characters />
+          </Route>
+        </Switch>
+      
+      </Router>
+
+
     </div>
   );
 }

@@ -369,6 +369,7 @@ class TableauV1 extends Component {
                                 <TableCell align="left">{perso.weapon}</TableCell>
                                 <TableCell align="left">{perso.voice}</TableCell>
                                 <TableCell align="center">
+                                    {/* <Button><Link to={'/character/' + perso.id}><EditRoundedIcon></EditRoundedIcon></Link></Button> */}
                                     <Button><EditRoundedIcon></EditRoundedIcon></Button>
                                     <BoiteDeDialogue dataPerso={perso} supprimer={() => this.supprimerLigne(perso.id)}></BoiteDeDialogue>
                                 </TableCell>
