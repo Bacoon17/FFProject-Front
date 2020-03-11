@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -7,6 +9,8 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
+import TableFooter from '@material-ui/core/TableFooter';
+import TablePagination from '@material-ui/core/TablePagination';
 
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -19,6 +23,11 @@ import TextField from '@material-ui/core/TextField';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import DeleteRoundedIcon from '@material-ui/icons/DeleteRounded';
 import AddCircleOutlineRoundedIcon from '@material-ui/icons/AddCircleOutlineRounded';
+import IconButton from '@material-ui/core/IconButton';
+import FirstPageIcon from '@material-ui/icons/FirstPage';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
+import LastPageIcon from '@material-ui/icons/LastPage';
 
 // Data : Objets contenant les données du headers du tableau
 
@@ -127,7 +136,7 @@ class BoiteDeDialogue2 extends Component {
 
     // Fonction permettant d'inscrire les données récupérées du formulaire en BD
     addCharacter(nom, episode, cristal, weapon, voice) {
-        
+
         let json = {
             name: nom,
             episode: episode,
@@ -154,7 +163,6 @@ class BoiteDeDialogue2 extends Component {
         this.setState({
             [e.target.id]: e.target.value
         })
-        console.log(this.state);
     }
 
     render() {
@@ -189,10 +197,92 @@ class BoiteDeDialogue2 extends Component {
     }
 }
 
+/**
+ * Fonction des propriétés de pagination
+ */
+// Style CSS
+const useStyles1 = makeStyles(theme => ({
+    root: {
+        flexShrink: 0,
+        marginLeft: theme.spacing(2.5),
+    },
+}));
+
+const useStyles2 = makeStyles({
+    table: {
+        minWidth: 1200,
+    },
+});
+
+function TablePaginationActions(props) {
+    const classes = useStyles1();
+    const theme = useTheme();
+    const { count, page, rowsPerPage, onChangePage } = props;
+
+    // Fonction qui permet de retourner le numéro de la page du tableau suite à un évènement
+    const handleFirstPageButtonClick = event => {
+        onChangePage(event, 0);
+    };
+
+    // Fonction qui permet de retourner le numéro de la page du tableau suite à un évènement
+    const handleBackButtonClick = event => {
+        onChangePage(event, page - 1);
+    };
+
+    // Fonction qui permet de retourner le numéro de la page du tableau suite à un évènement
+    const handleNextButtonClick = event => {
+        onChangePage(event, page + 1);
+    };
+
+    // Fonction qui permet de retourner le numéro de la page du tableau suite à un évènement
+    const handleLastPageButtonClick = event => {
+        onChangePage(event, Math.max(0, Math.ceil(count / rowsPerPage) - 1));
+    };
+
+    return (
+        <div className={classes.root}>
+            <IconButton
+                onClick={handleFirstPageButtonClick}
+                disabled={page === 0}
+                aria-label="first page"
+            >
+                {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+            </IconButton>
+            <IconButton onClick={handleBackButtonClick} disabled={page === 0} aria-label="previous page">
+                {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+            </IconButton>
+            <IconButton
+                onClick={handleNextButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="next page"
+            >
+                {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+            </IconButton>
+            <IconButton
+                onClick={handleLastPageButtonClick}
+                disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+                aria-label="last page"
+            >
+                {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+            </IconButton>
+        </div>
+    );
+}
+
+// Vérification du type des variables et si leur présence est requise dans TablePaginationActions
+TablePaginationActions.propTypes = {
+    count: PropTypes.number.isRequired,
+    onChangePage: PropTypes.func.isRequired,
+    page: PropTypes.number.isRequired,
+    rowsPerPage: PropTypes.number.isRequired,
+};
+
 class TableauV1 extends Component {
 
     state = {
-        personnage: []
+        personnage: [],
+        page: 0,
+        rowsPerPage: 10
     }
 
     // Récupérer au téléchargement de la page l'ensemble des données
@@ -220,15 +310,40 @@ class TableauV1 extends Component {
 
     // Suppression d'une ligne
     supprimerLigne = (id) => {
-        const index = this.state.personnage.findIndex((element) => element.id === id);
-        let persoTemp = this.state.personnage;
-        persoTemp.splice(index, 1);
+        fetch('http://localhost:3001/characters/delete/' + id, {method: 'delete'})
+            .then((data) => console.log(data))
+            .catch((err) => console.log(err))
+    }
+
+    // ************************* Pagination ******************************
+
+    // Fonction qui permet de connaitre le nombre de lignes vides à la dernière page
+    emptyRows = () => {
         this.setState(
             {
-                personnage: persoTemp
+                rowsPerPage: this.state.rowsPerPage - Math.min(this.state.rowsPerPage, this.state.personnage.length - this.state.page * this.state.rowsPerPage)
             }
         )
     }
+
+    // Fonction qui permet d'afficher la bonne page du tableau
+    handleChangePage = (event, newPage) => {
+        this.setState(
+            {
+                page: newPage
+            }
+        )
+    };
+
+    // Fonction qui permet d'afficher le tableau selon le choix du nombre de lignes et repartir à la page principale
+    handleChangeRowsPerPage = (event) => {
+        this.setState(
+            {
+                rowsPerPage: parseInt(event.target.value, 10),
+                page: 0
+            }
+        )
+    };
 
     render() {
         return (
@@ -246,7 +361,7 @@ class TableauV1 extends Component {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {this.state.personnage.map(perso => (
+                        {(this.state.rowsPerPage > 0 ? this.state.personnage.slice(this.state.page * this.state.rowsPerPage, this.state.page * this.state.rowsPerPage + this.state.rowsPerPage) : this.state.personnage).map(perso => (
                             <TableRow key={perso.name}>
                                 <TableCell component="th" scope="row">{perso.name}</TableCell>
                                 <TableCell align="left">{perso.episode}</TableCell>
@@ -260,6 +375,30 @@ class TableauV1 extends Component {
                             </TableRow>
                         ))}
                     </TableBody>
+
+                    <TableFooter>
+                        <TableRow>
+                            <TablePagination
+                                rowsPerPageOptions={[5, 10, 25, { label: 'Tout', value: -1 }]}
+                                colSpan={6}
+                                count={this.state.personnage.length}
+                                rowsPerPage={this.state.rowsPerPage}
+                                page={this.state.page}
+                                SelectProps={{
+                                    inputProps: { 'aria-label': 'rows per page' },
+                                    native: true,
+                                }}
+                                onChangePage={this.handleChangePage}
+                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                ActionsComponent={TablePaginationActions}
+
+                                // Affichage du label du nb de ligne par page
+                                labelRowsPerPage='Lignes par page'
+                                labelDisplayedRows={({ from, to, count }) => from + '-' + to + ' sur ' + count}
+                            />
+                        </TableRow>
+                    </TableFooter>
+
                 </Table>
             </div>
 

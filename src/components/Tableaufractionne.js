@@ -29,8 +29,6 @@ const useStyles2 = makeStyles({
     },
 });
 
-// 
-
 function TablePaginationActions(props) {
     const classes = useStyles1();
     const theme = useTheme();

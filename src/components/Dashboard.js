@@ -30,10 +30,12 @@ import { mainListItems, secondaryListItems } from './listItems';
 // import TableauV1d from './Tableaux/TableauV1-fonction3';
 // import TableauV2 from './Tableaux/TableauV2-ajoutBouton';
 // import TableauV1 from './Tableaux/TableauV3-Suppression'
-import TableauV1 from './Tableaux/TableauV3-Suppression2'
+// import TableauV1 from './Tableaux/TableauV3-Suppression2'
+import TableauV4 from './Tableaux/TableauV4'
 
 import TableauFractionne from './Tableaufractionne'
 
+// Pied de page du DashBoard
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -238,8 +240,6 @@ export default function Dashboard() {
             <p>Profile</p>
           </MenuItem>
 
-
-
         </Toolbar>
 
       </AppBar>
@@ -260,42 +260,28 @@ export default function Dashboard() {
         <Divider />
         <List>{mainListItems}</List>
         <Divider />
-        <List>{secondaryListItems}</List>
+        {/* <List>{secondaryListItems}</List> */}
       </Drawer>
+
+
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
+
           <Grid container spacing={3}>
+            
             <Grid item xs={12}>
               <Paper className={classes.paper}>
-                <TableauV1 />
+                <TableauV4 />
               </Paper>
             </Grid>
-            
-            {/* <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <TableauPersonnages />
-              </Paper>
-            </Grid> */}
 
-
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <TableauFractionne />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                
-              </Paper>
-            </Grid>
-            {/* Recent Orders */}
-            
           </Grid>
+
           <Box pt={4}>
             <Copyright />
           </Box>
+          
         </Container>
       </main>
     </div>

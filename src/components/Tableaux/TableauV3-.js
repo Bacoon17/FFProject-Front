@@ -99,57 +99,22 @@ class BoiteDeDialogue2 extends Component {
         episode: "",
         cristal: "",
         weapon: "",
-        voice: ""
+        voice:""
     }
 
-    // Ouvrir la fenetre de dialogue au click d'ajout
     handleClickOpen = () => {
         this.setState({
             open: true
         })
     };
 
-    // Fermer la fenetre de dialogue au click sur annuler
-    handleClickCancel = () => {
-        this.setState({
-            open: false
-        })
-    };
-
-    // Appeler la fonction qui va ajouter un personnage en BD et fermer la fenetre de dialogue
-    handleValidate = evt => {
+    handleValidate = evt => {       
         this.setState({
             open: false
         })
         evt.preventDefault();
-        this.addCharacter(this.state.name, this.state.episode, this.state.cristal, this.state.weapon, this.state.voice);
     };
 
-    // Fonction permettant d'inscrire les données récupérées du formulaire en BD
-    addCharacter(nom, episode, cristal, weapon, voice) {
-        
-        let json = {
-            name: nom,
-            episode: episode,
-            cristal: cristal,
-            weapon: weapon,
-            voice: voice
-        }
-        let array = [];
-        array.push(json);
-
-
-        fetch('http://localhost:3001/characters/add', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(array)
-        })
-            // .then((res) => res.json())
-            .then((data) => console.log(data))
-            .catch((err) => console.log(err))
-    }
-
-    // A chaque fois qu'un utilisateur tape qqch dans le formulaire, on enregistre la valeur dans le state
     change = (e) => {
         this.setState({
             [e.target.id]: e.target.value
@@ -172,17 +137,20 @@ class BoiteDeDialogue2 extends Component {
                     <DialogTitle id="alert-dialog-title">{"Ajout d'un personnage"}</DialogTitle>
                     <DialogContent>
                         <form style={{ width: 500 }} noValidate autoComplete="off" onSubmit={this.handleValidate}>
-                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="name" label="Personnage" variant="outlined" onChange={this.change} /><br />
-                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="episode" label="Episode" variant="outlined" onChange={this.change} /><br />
-                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="cristal" label="Cristal" variant="outlined" onChange={this.change} /><br />
-                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="weapon" label="Weapon" variant="outlined" onChange={this.change} /><br />
-                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="voice" label="Voice" variant="outlined" onChange={this.change} /><br />
+                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="name" label="Personnage" variant="outlined" onChange={this.change}/><br/>
+                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="episode" label="Episode" variant="outlined" onChange={this.change}/><br/>
+                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="cristal" label="Cristal" variant="outlined" onChange={this.change}/><br/>
+                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="weapon" label="Weapon" variant="outlined" onChange={this.change}/><br/>
+                            <TextField style={{ width: 500, margin: 5, }} className="outlined-basic" id="voice" label="Voice" variant="outlined" onChange={this.change}/><br/>
+                            
                             <DialogActions>
-                                <Button autoFocus onClick={this.handleClickCancel} color="primary">Annuler</Button>
                                 <Button type='submit' color="primary">Valider</Button>
                             </DialogActions>
+                            
                         </form>
                     </DialogContent>
+
+                    
                 </Dialog>
             </>
         )
@@ -195,20 +163,7 @@ class TableauV1 extends Component {
         personnage: []
     }
 
-    // Récupérer au téléchargement de la page l'ensemble des données
     componentDidMount() {
-        this.fetchData();
-    }
-
-    // Permet le rechargement des data lorsqu'on modifie la base de donnée
-    componentDidUpdate(prevState) {
-        if (prevState.personnage !== this.state.personnage) {
-            this.fetchData();
-        }
-    }
-
-    // Récupérer l'ensemble des données du tableau des personnages
-    fetchData = () => {
         fetch('http://localhost:3001/characters/all')
             .then((res) => {
                 return res.json()
@@ -218,11 +173,10 @@ class TableauV1 extends Component {
             })
     }
 
-    // Suppression d'une ligne
     supprimerLigne = (id) => {
-        const index = this.state.personnage.findIndex((element) => element.id === id);
+        const test = this.state.personnage.findIndex((element) => element.id === id);
         let persoTemp = this.state.personnage;
-        persoTemp.splice(index, 1);
+        persoTemp.splice(test, 1);
         this.setState(
             {
                 personnage: persoTemp
